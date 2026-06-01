@@ -49,6 +49,11 @@ if(ORAMA_BACKEND_MLX)
   # Validation CLI: load a real Gemma-2 4-bit model and generate (pure C++/MLX).
   add_executable(gemma-cli tools/gemma_cli.cpp)
   target_link_libraries(gemma-cli PRIVATE model-runtime)
+
+  # Perf bench: run with sudo — spawns powermetrics (GPU sampler) + a generation
+  # workload, prints prefill/decode tok/s + GPU residency/power/freq + peak mem.
+  add_executable(gemma-bench tools/gemma_bench.cpp)
+  target_link_libraries(gemma-bench PRIVATE model-runtime)
 endif()
 
 include(CTest)

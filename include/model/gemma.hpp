@@ -28,6 +28,14 @@ struct GemmaConfig {
     int bits = 4;
 };
 
+// Optional timing returned from generate() (for benchmarking).
+struct GenStats {
+    int prompt_tokens = 0;
+    int gen_tokens = 0;
+    double prefill_s = 0.0;
+    double decode_s = 0.0;
+};
+
 class Gemma {
 public:
     Gemma();
@@ -45,7 +53,8 @@ public:
     // streaming each decoded piece via on_piece. Returns the full text.
     [[nodiscard]] Result<std::string> generate(
         const std::string& prompt, int max_new_tokens,
-        const std::function<void(const std::string&)>& on_piece = {});
+        const std::function<void(const std::string&)>& on_piece = {},
+        GenStats* stats = nullptr);
 
     [[nodiscard]] const GemmaConfig& config() const;
 

@@ -87,7 +87,8 @@ Result<Gemma> Gemma::load(const std::string& dir) {
 }
 
 Result<std::string> Gemma::generate(const std::string& prompt, int max_new_tokens,
-                                    const std::function<void(const std::string&)>& on_piece) {
+                                    const std::function<void(const std::string&)>& on_piece,
+                                    GenStats* stats) {
     auto& im = *impl_;
     const auto& c = im.cfg;
     if (!im.tok.loaded()) return fail("tokenizer not loaded");
@@ -216,6 +217,12 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
             ++pos;
         }
         const double decode_s = std::chrono::duration<double>(clk::now() - t_dec).count();
+        if (stats) {
+            stats->prompt_tokens = static_cast<int>(ids.size());
+            stats->gen_tokens = static_cast<int>(out_ids.size());
+            stats->prefill_s = prefill_s;
+            stats->decode_s = decode_s;
+        }
         if (std::getenv("GEMMA_STATS")) {
             const double dsafe = decode_s > 0 ? decode_s : 1e-9;
             std::fprintf(stderr,
