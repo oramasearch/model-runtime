@@ -23,9 +23,12 @@ option(ORAMA_BACKEND_CUDA     "Build the CUDA backend (cloud)"             OFF)
 
 # Library first (D16). The interface is backend-free; backends are added behind
 # the toggles with their impl issues (orama-platform#33/#34/#35/#36).
-add_library(model-runtime INTERFACE)
+# Library first (D16). The interface + a deterministic stub engine (so the
+# chain + UI build/run with no ML toolchain). Real backends compile in behind
+# the toggles above with their impl issues (orama-platform#33/#34/#35/#36).
+add_library(model-runtime STATIC src/engine.cpp)
 add_library(orama::model-runtime ALIAS model-runtime)
-target_include_directories(model-runtime INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(model-runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 include(CTest)
 if(BUILD_TESTING)
@@ -34,7 +37,7 @@ if(BUILD_TESTING)
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG v3.7.1)
   FetchContent_MakeAvailable(Catch2)
-  add_executable(model-runtime-tests tests/test_main.cpp)
+  add_executable(model-runtime-tests tests/test_main.cpp tests/test_engine.cpp)
   target_link_libraries(model-runtime-tests PRIVATE model-runtime Catch2::Catch2WithMain)
   list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
   include(Catch)
