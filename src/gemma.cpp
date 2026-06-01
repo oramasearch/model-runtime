@@ -200,16 +200,29 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
         const double prefill_s = std::chrono::duration<double>(clk::now() - t_pf).count();
         const int vocab = logits.shape().back();
         int pos = static_cast<int>(ids.size());
-        int blank_run = 0;             // consecutive whitespace-only pieces
-        int repeat_run = 0, last_tok = -1;  // consecutive identical tokens
-        // Greedy repetition penalty over GENERATED tokens only (NOT the prompt —
-        // we want the model to copy names out of the retrieved context). HF-style:
-        // a seen token's logit /= penalty if positive, else *= penalty. This is
-        // what stops the ",,,," / whitespace degeneration greedy falls into and
-        // lets the model actually produce the list. The fuller sampler
-        // (temperature/top-p/top-k/seed) is tracked in #104.
-        constexpr float kRepPenalty = 1.3f;
+        // CUMULATIVE repetition penalty over GENERATED tokens only (NOT the
+        // prompt — the model must stay free to copy names out of the retrieved
+        // context). HF-style and *escalating*: each time a token is generated its
+        // penalty multiplies by kRepStep, so logit /= kRepStep^count (or *= for
+        // negative logits). A fixed penalty wasn't enough — with a comma-saturated
+        // tabular context the comma logit dominates, so it must keep climbing
+        // until the loop self-extinguishes. Fuller sampler is tracked in #104.
+        constexpr float kRepStep = 1.4f;
         std::vector<float> pen(static_cast<size_t>(vocab), 1.0f);
+        // guaranteed-termination backstop: a short repeating tail cycle (period
+        // 1..4, repeated 3×) — kills any loop the penalty doesn't break (e.g. a
+        // comma↔newline 2-cycle that evades single-token / whitespace stops).
+        auto cycling = [](const std::vector<int>& v) {
+            const int n = static_cast<int>(v.size());
+            for (int p = 1; p <= 4; ++p) {
+                if (n < 3 * p) continue;
+                bool same = true;
+                for (int i = 0; i < 2 * p && same; ++i)
+                    if (v[n - 1 - i] != v[n - 1 - i - p]) same = false;
+                if (same) return true;
+            }
+            return false;
+        };
         const auto t_dec = clk::now();
         for (int step = 0; step < max_new_tokens; ++step) {
             mx::array penalty = mx::astype(mx::array(pen.data(), {1, vocab}, mx::float32), kDt);
@@ -226,18 +239,10 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
                              im.tok.decode({tok}).c_str());
             }
             if (tok == im.tok.eos_id() || tok == eot) break;
-            // backstops for any residual loop the penalty doesn't break
-            repeat_run = (tok == last_tok) ? repeat_run + 1 : 0;
-            last_tok = tok;
-            if (repeat_run >= 8) break;
-            const std::string piece = im.tok.decode({tok});
-            const bool blank =
-                !piece.empty() && piece.find_first_not_of(" \t\r\n") == std::string::npos;
-            if (blank && ++blank_run >= 12) break;
-            if (!blank) blank_run = 0;
-            if (tok >= 0 && tok < vocab) pen[static_cast<size_t>(tok)] = kRepPenalty;  // mark seen
+            if (tok >= 0 && tok < vocab) pen[static_cast<size_t>(tok)] *= kRepStep;  // escalate
             out_ids.push_back(tok);
-            if (on_piece) on_piece(piece);
+            if (on_piece) on_piece(im.tok.decode({tok}));
+            if (cycling(out_ids)) break;
             logits = forward_last({tok}, pos);
             ++pos;
         }
