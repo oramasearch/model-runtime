@@ -198,11 +198,25 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
         auto logits = forward_last(ids, 0);
         mx::eval(logits);  // force the prefill compute so we time it accurately
         const double prefill_s = std::chrono::duration<double>(clk::now() - t_pf).count();
+        const int vocab = logits.shape().back();
         int pos = static_cast<int>(ids.size());
-        int blank_run = 0;  // consecutive whitespace-only pieces
+        int blank_run = 0;             // consecutive whitespace-only pieces
+        int repeat_run = 0, last_tok = -1;  // consecutive identical tokens
+        // Greedy repetition penalty over GENERATED tokens only (NOT the prompt —
+        // we want the model to copy names out of the retrieved context). HF-style:
+        // a seen token's logit /= penalty if positive, else *= penalty. This is
+        // what stops the ",,,," / whitespace degeneration greedy falls into and
+        // lets the model actually produce the list. The fuller sampler
+        // (temperature/top-p/top-k/seed) is tracked in #104.
+        constexpr float kRepPenalty = 1.3f;
+        std::vector<float> pen(static_cast<size_t>(vocab), 1.0f);
         const auto t_dec = clk::now();
         for (int step = 0; step < max_new_tokens; ++step) {
-            mx::array next = mx::argmax(logits, /*axis=*/-1, /*keepdims=*/false);
+            mx::array penalty = mx::astype(mx::array(pen.data(), {1, vocab}, mx::float32), kDt);
+            mx::array adj = mx::where(mx::greater(logits, k(0.0f)),
+                                      mx::divide(logits, penalty),
+                                      mx::multiply(logits, penalty));
+            mx::array next = mx::argmax(adj, /*axis=*/-1, /*keepdims=*/false);
             mx::eval(next);
             const int tok = static_cast<int>(next.item<uint32_t>());
             if (std::getenv("GEMMA_DEBUG")) {
@@ -212,14 +226,16 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
                              im.tok.decode({tok}).c_str());
             }
             if (tok == im.tok.eos_id() || tok == eot) break;
+            // backstops for any residual loop the penalty doesn't break
+            repeat_run = (tok == last_tok) ? repeat_run + 1 : 0;
+            last_tok = tok;
+            if (repeat_run >= 8) break;
             const std::string piece = im.tok.decode({tok});
-            // Greedy can loop on whitespace and never emit <eot>; bail after a
-            // run of blank pieces so one turn can't burn the whole token budget.
-            // (A real temperature/top-p/repetition sampler is tracked in #104.)
             const bool blank =
                 !piece.empty() && piece.find_first_not_of(" \t\r\n") == std::string::npos;
             if (blank && ++blank_run >= 12) break;
             if (!blank) blank_run = 0;
+            if (tok >= 0 && tok < vocab) pen[static_cast<size_t>(tok)] = kRepPenalty;  // mark seen
             out_ids.push_back(tok);
             if (on_piece) on_piece(piece);
             logits = forward_last({tok}, pos);
