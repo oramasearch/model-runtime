@@ -73,9 +73,16 @@ private:
 
 }  // namespace
 
+#ifdef ORAMA_HAVE_MLX
+std::unique_ptr<Engine> make_mlx_engine();  // defined in mlx_engine.cpp
+#endif
+
 std::unique_ptr<Engine> make_engine(Backend b) {
-    // Today: always the stub. Real backends (MLX first, D19) land behind the
-    // CMake toggles and will be selected here when present.
+#ifdef ORAMA_HAVE_MLX
+    if (b == Backend::MLX) return make_mlx_engine();  // real MLX (Metal) backend
+#endif
+    // Otherwise the deterministic stub. Other real backends (libtorch/llama.cpp/
+    // CUDA, D19) land behind their CMake toggles and get selected here too.
     return std::make_unique<StubEngine>(b);
 }
 

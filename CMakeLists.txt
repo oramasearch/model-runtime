@@ -30,6 +30,17 @@ add_library(model-runtime STATIC src/engine.cpp)
 add_library(orama::model-runtime ALIAS model-runtime)
 target_include_directories(model-runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
+# Real MLX backend (Apple Silicon / Metal). Needs `brew install mlx`. The bottle
+# ships a CMake config under <prefix>/share/cmake/MLX, so hint the brew prefix.
+if(ORAMA_BACKEND_MLX)
+  find_package(MLX CONFIG REQUIRED
+    PATHS /opt/homebrew/opt/mlx/share/cmake/MLX /usr/local/opt/mlx/share/cmake/MLX)
+  target_sources(model-runtime PRIVATE src/mlx_engine.cpp)
+  target_link_libraries(model-runtime PUBLIC mlx)
+  target_compile_definitions(model-runtime PUBLIC ORAMA_HAVE_MLX=1)
+  message(STATUS "model-runtime: MLX backend ON (mlx ${MLX_VERSION})")
+endif()
+
 include(CTest)
 if(BUILD_TESTING)
   include(FetchContent)
@@ -37,7 +48,11 @@ if(BUILD_TESTING)
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG v3.7.1)
   FetchContent_MakeAvailable(Catch2)
-  add_executable(model-runtime-tests tests/test_main.cpp tests/test_engine.cpp)
+  set(MR_TESTS tests/test_main.cpp tests/test_engine.cpp)
+  if(ORAMA_BACKEND_MLX)
+    list(APPEND MR_TESTS tests/test_mlx.cpp)
+  endif()
+  add_executable(model-runtime-tests ${MR_TESTS})
   target_link_libraries(model-runtime-tests PRIVATE model-runtime Catch2::Catch2WithMain)
   list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
   include(Catch)

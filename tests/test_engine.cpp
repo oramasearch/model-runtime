@@ -4,12 +4,24 @@
 
 #include "model/engine.hpp"
 
-TEST_CASE("make_engine returns a stub for this platform", "[engine]") {
+TEST_CASE("make_engine returns an engine for this platform", "[engine]") {
     auto e = model::make_engine();
     REQUIRE(e != nullptr);
-    REQUIRE(e->is_stub());
     REQUIRE(e->backend() == model::default_backend());
+#ifdef ORAMA_HAVE_MLX
+    // With the MLX backend compiled in, the default (macOS) engine is real MLX.
+    REQUIRE_FALSE(e->is_stub());
+#else
+    REQUIRE(e->is_stub());
     REQUIRE(e->name().find("stub") != std::string_view::npos);
+#endif
+}
+
+TEST_CASE("the stub engine is always available regardless of backend", "[engine]") {
+    // LibTorch isn't built here, so this backend always falls back to the stub.
+    auto e = model::make_engine(model::Backend::LibTorch);
+    REQUIRE(e != nullptr);
+    REQUIRE(e->is_stub());
 }
 
 TEST_CASE("infer streams tokens and folds in injected context (D25)", "[engine]") {
