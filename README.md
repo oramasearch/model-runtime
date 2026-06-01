@@ -18,6 +18,8 @@ ctest --test-dir build --output-on-failure
 
 Backends are opt-in CMake toggles (`-DORAMA_BACKEND_MLX=ON`, `…_LIBTORCH`, `…_LLAMACPP`, `…_CUDA`) so the scaffold + CI build with no ML toolchain.
 
+**Real Gemma‑2 (pure C++/MLX, no Python):** build/run/validate/benchmark the real model — see **[`docs/gemma-runbook.md`](docs/gemma-runbook.md)** (weights download, `gemma-cli`, the `sudo gemma-bench` perf harness, the garbage-if-wrong checklist, troubleshooting).
+
 ## Stack
 
 C++23 (→ C++26 per D7), CMake ≥ 3.28 + Ninja, FetchContent, Catch2. Library-first (D16); links as `orama::model-runtime`.

@@ -15,6 +15,10 @@ ONE interface for training + inference (D19), with a **native backend per platfo
 
 Keep this module about *running a model on whatever hardware we're on*, nothing more.
 
+## Runbook
+
+Build/run/validate/benchmark the **real Gemma‑2** model (pure C++/MLX, no Python): **[`docs/gemma-runbook.md`](docs/gemma-runbook.md)** — weights download, `gemma-cli`, the `sudo gemma-bench` GPU perf harness (tok/s + active-residency/power/freq), the garbage-if-wrong checklist, troubleshooting. Measured baseline on M3 Max: prefill ~770 tok/s, decode ~95 tok/s, **99% GPU residency**, ~21.8 W.
+
 ## Where the design lives
 
 - architecture [D19](https://github.com/oramasearch/orama-platform/blob/main/docs/projects/orama-platform/architecture.md#d19) / [D21](https://github.com/oramasearch/orama-platform/blob/main/docs/projects/orama-platform/architecture.md#d21); [`experience-river.md`](https://github.com/oramasearch/orama-platform/blob/main/docs/projects/orama-platform/experience-river.md).
