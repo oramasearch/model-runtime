@@ -35,10 +35,16 @@ target_include_directories(model-runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/incl
 if(ORAMA_BACKEND_MLX)
   find_package(MLX CONFIG REQUIRED
     PATHS /opt/homebrew/opt/mlx/share/cmake/MLX /usr/local/opt/mlx/share/cmake/MLX)
-  target_sources(model-runtime PRIVATE src/mlx_engine.cpp)
-  target_link_libraries(model-runtime PUBLIC mlx)
+  # SentencePiece (Gemma's tokenizer) — C++ lib, no cmake config in the bottle.
+  find_library(SENTENCEPIECE_LIB sentencepiece REQUIRED
+    PATHS /opt/homebrew/opt/sentencepiece/lib /usr/local/opt/sentencepiece/lib)
+  find_path(SENTENCEPIECE_INCLUDE sentencepiece_processor.h
+    PATHS /opt/homebrew/opt/sentencepiece/include /usr/local/opt/sentencepiece/include)
+  target_sources(model-runtime PRIVATE src/mlx_engine.cpp src/tokenizer.cpp src/weights.cpp)
+  target_include_directories(model-runtime PRIVATE ${SENTENCEPIECE_INCLUDE})
+  target_link_libraries(model-runtime PUBLIC mlx PRIVATE ${SENTENCEPIECE_LIB})
   target_compile_definitions(model-runtime PUBLIC ORAMA_HAVE_MLX=1)
-  message(STATUS "model-runtime: MLX backend ON (mlx ${MLX_VERSION})")
+  message(STATUS "model-runtime: MLX backend ON (mlx ${MLX_VERSION}); tokenizer ${SENTENCEPIECE_LIB}")
 endif()
 
 include(CTest)
@@ -50,7 +56,7 @@ if(BUILD_TESTING)
   FetchContent_MakeAvailable(Catch2)
   set(MR_TESTS tests/test_main.cpp tests/test_engine.cpp)
   if(ORAMA_BACKEND_MLX)
-    list(APPEND MR_TESTS tests/test_mlx.cpp)
+    list(APPEND MR_TESTS tests/test_mlx.cpp tests/test_weights.cpp tests/test_tokenizer.cpp)
   endif()
   add_executable(model-runtime-tests ${MR_TESTS})
   target_link_libraries(model-runtime-tests PRIVATE model-runtime Catch2::Catch2WithMain)
