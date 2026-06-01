@@ -40,11 +40,15 @@ if(ORAMA_BACKEND_MLX)
     PATHS /opt/homebrew/opt/sentencepiece/lib /usr/local/opt/sentencepiece/lib)
   find_path(SENTENCEPIECE_INCLUDE sentencepiece_processor.h
     PATHS /opt/homebrew/opt/sentencepiece/include /usr/local/opt/sentencepiece/include)
-  target_sources(model-runtime PRIVATE src/mlx_engine.cpp src/tokenizer.cpp src/weights.cpp)
+  target_sources(model-runtime PRIVATE src/mlx_engine.cpp src/tokenizer.cpp src/weights.cpp src/gemma.cpp)
   target_include_directories(model-runtime PRIVATE ${SENTENCEPIECE_INCLUDE})
   target_link_libraries(model-runtime PUBLIC mlx PRIVATE ${SENTENCEPIECE_LIB})
   target_compile_definitions(model-runtime PUBLIC ORAMA_HAVE_MLX=1)
   message(STATUS "model-runtime: MLX backend ON (mlx ${MLX_VERSION}); tokenizer ${SENTENCEPIECE_LIB}")
+
+  # Validation CLI: load a real Gemma-2 4-bit model and generate (pure C++/MLX).
+  add_executable(gemma-cli tools/gemma_cli.cpp)
+  target_link_libraries(gemma-cli PRIVATE model-runtime)
 endif()
 
 include(CTest)

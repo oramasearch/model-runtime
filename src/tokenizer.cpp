@@ -38,5 +38,8 @@ std::string Tokenizer::decode(const std::vector<int>& ids) const {
 int Tokenizer::vocab_size() const { return impl_->ok ? impl_->sp.GetPieceSize() : 0; }
 int Tokenizer::bos_id() const { return impl_->ok ? impl_->sp.bos_id() : -1; }
 int Tokenizer::eos_id() const { return impl_->ok ? impl_->sp.eos_id() : -1; }
+int Tokenizer::piece_to_id(const std::string& piece) const {
+    return impl_->ok ? impl_->sp.PieceToId(piece) : -1;
+}
 
 }  // namespace model

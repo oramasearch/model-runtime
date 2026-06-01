@@ -21,9 +21,12 @@
 #include <string>
 #include <vector>
 
+#include <cstdlib>
+
 #include <mlx/mlx.h>
 
 #include "model/engine.hpp"
+#include "model/gemma.hpp"
 
 namespace mx = mlx::core;
 
@@ -53,6 +56,14 @@ public:
           mA_(mx::zeros({kRank, kIn}, mx::float32)), vA_(mx::zeros({kRank, kIn}, mx::float32)),
           mB_(mx::zeros({kOut, kRank}, mx::float32)), vB_(mx::zeros({kOut, kRank}, mx::float32)) {
         mx::eval({W_, X_, target_, A_, B_});
+        // If a real Gemma model is available, load it for generation (pure C++,
+        // no Python). Point ORAMA_GEMMA_DIR at an mlx-community Gemma-2 4-bit dir.
+        if (const char* dir = std::getenv("ORAMA_GEMMA_DIR")) {
+            if (auto g = Gemma::load(dir)) {
+                gemma_ = std::make_unique<Gemma>(std::move(*g));
+                name_ = "mlx (real Gemma-2 @ Metal)";
+            }
+        }
     }
 
     std::string_view name() const override { return name_; }
@@ -88,9 +99,20 @@ public:
         return r;
     }
 
-    Result<InferResult> infer(std::string_view, const OnToken& on_token) override {
+    Result<InferResult> infer(std::string_view prompt, const OnToken& on_token) override {
         const auto t0 = Clock::now();
-        // Real MLX forward (on-device inference proof): run the current net.
+        if (gemma_) {  // real Gemma-2 generation (pure C++/MLX, no Python)
+            InferResult rr;
+            auto out = gemma_->generate(std::string(prompt), 160, [&](const std::string& piece) {
+                ++rr.tokens;
+                if (on_token) { if (!on_token(piece).empty()) ++rr.injections; }
+            });
+            if (!out) return fail(out.error().message);
+            rr.text = std::move(*out);
+            rr.took_us = us_since(t0);
+            return rr;
+        }
+        // Otherwise a real MLX forward (on-device inference proof) + token stream.
         auto base = mx::matmul(X_, mx::transpose(W_));
         auto low = mx::matmul(mx::matmul(X_, mx::transpose(A_)), mx::transpose(B_));
         auto y = mx::add(base, mx::multiply(low, scalar(kAlpha / kRank)));
@@ -132,6 +154,7 @@ private:
     std::string name_;
     mx::array W_, X_, target_, A_, B_, mA_, vA_, mB_, vB_;
     std::uint64_t step_ = 0;
+    std::unique_ptr<Gemma> gemma_;  // real Gemma model when ORAMA_GEMMA_DIR is set
 };
 
 }  // namespace

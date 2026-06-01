@@ -30,6 +30,9 @@ public:
     [[nodiscard]] int vocab_size() const;
     [[nodiscard]] int bos_id() const;
     [[nodiscard]] int eos_id() const;
+    // Map a single piece (e.g. "<start_of_turn>") to its id, or -1. For building
+    // chat templates where special tokens must be their own ids, not re-tokenized.
+    [[nodiscard]] int piece_to_id(const std::string& piece) const;
 
 private:
     struct Impl;
