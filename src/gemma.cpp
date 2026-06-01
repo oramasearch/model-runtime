@@ -199,6 +199,7 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
         mx::eval(logits);  // force the prefill compute so we time it accurately
         const double prefill_s = std::chrono::duration<double>(clk::now() - t_pf).count();
         int pos = static_cast<int>(ids.size());
+        int blank_run = 0;  // consecutive whitespace-only pieces
         const auto t_dec = clk::now();
         for (int step = 0; step < max_new_tokens; ++step) {
             mx::array next = mx::argmax(logits, /*axis=*/-1, /*keepdims=*/false);
@@ -211,8 +212,16 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
                              im.tok.decode({tok}).c_str());
             }
             if (tok == im.tok.eos_id() || tok == eot) break;
+            const std::string piece = im.tok.decode({tok});
+            // Greedy can loop on whitespace and never emit <eot>; bail after a
+            // run of blank pieces so one turn can't burn the whole token budget.
+            // (A real temperature/top-p/repetition sampler is tracked in #104.)
+            const bool blank =
+                !piece.empty() && piece.find_first_not_of(" \t\r\n") == std::string::npos;
+            if (blank && ++blank_run >= 12) break;
+            if (!blank) blank_run = 0;
             out_ids.push_back(tok);
-            if (on_piece) on_piece(im.tok.decode({tok}));
+            if (on_piece) on_piece(piece);
             logits = forward_last({tok}, pos);
             ++pos;
         }
@@ -231,7 +240,10 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
                 out_ids.size(), decode_s, static_cast<double>(out_ids.size()) / dsafe,
                 static_cast<double>(mx::get_peak_memory()) / 1e6);
         }
-        return im.tok.decode(out_ids);
+        std::string text = im.tok.decode(out_ids);
+        const auto last_nonws = text.find_last_not_of(" \t\r\n");
+        text.erase(last_nonws == std::string::npos ? 0 : last_nonws + 1);
+        return text;
     } catch (const std::exception& e) {
         return fail(std::string("gemma generate: ") + e.what());
     }
