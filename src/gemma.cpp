@@ -191,9 +191,14 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
             return logits;  // [1, vocab]
         };
 
+        using clk = std::chrono::steady_clock;
         std::vector<int> out_ids;
+        const auto t_pf = clk::now();
         auto logits = forward_last(ids, 0);
+        mx::eval(logits);  // force the prefill compute so we time it accurately
+        const double prefill_s = std::chrono::duration<double>(clk::now() - t_pf).count();
         int pos = static_cast<int>(ids.size());
+        const auto t_dec = clk::now();
         for (int step = 0; step < max_new_tokens; ++step) {
             mx::array next = mx::argmax(logits, /*axis=*/-1, /*keepdims=*/false);
             mx::eval(next);
@@ -209,6 +214,15 @@ Result<std::string> Gemma::generate(const std::string& prompt, int max_new_token
             if (on_piece) on_piece(im.tok.decode({tok}));
             logits = forward_last({tok}, pos);
             ++pos;
+        }
+        const double decode_s = std::chrono::duration<double>(clk::now() - t_dec).count();
+        if (std::getenv("GEMMA_STATS")) {
+            const double dsafe = decode_s > 0 ? decode_s : 1e-9;
+            std::fprintf(stderr,
+                "[stats] prefill: %zu tok in %.3f s = %.1f tok/s | decode: %zu tok in %.3f s = %.1f tok/s | peak GPU mem %.0f MB\n",
+                ids.size(), prefill_s, static_cast<double>(ids.size()) / (prefill_s > 0 ? prefill_s : 1e-9),
+                out_ids.size(), decode_s, static_cast<double>(out_ids.size()) / dsafe,
+                static_cast<double>(mx::get_peak_memory()) / 1e6);
         }
         return im.tok.decode(out_ids);
     } catch (const std::exception& e) {
