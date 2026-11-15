@@ -1,7 +1,0 @@
-# Paths kept out of the public export of this repository (one scrubbed export commit; see the
-# release process). Internal agent and process instructions stay in the private repository.
-CLAUDE.md
-AGENTS.md
-.claude/
-.codex/
-.cursor/
