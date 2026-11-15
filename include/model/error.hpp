@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #pragma once
 // model::Result<T> = std::expected<T, model::Error>
 // No exceptions cross a component's public API boundary (Orama Platform D7/D16).

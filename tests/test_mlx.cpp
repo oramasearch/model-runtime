@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // Real-MLX backend tests. Built only when ORAMA_BACKEND_MLX=ON (needs MLX).
 #include <catch2/catch_test_macros.hpp>
 

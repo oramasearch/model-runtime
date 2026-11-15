@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // Built only with ORAMA_BACKEND_MLX. Exercises the SentencePiece wrapper's
 // lifecycle without a real model file (#102, D26). With a Gemma tokenizer.model
 // present, ORAMA_TOKENIZER_MODEL can point at it for an encode/decode round-trip.

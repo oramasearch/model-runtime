@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #pragma once
 // model-runtime — backend-agnostic train + infer behind ONE interface
 // (Orama Platform D19). The same training/inference contract runs on a native

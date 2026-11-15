@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "model/tokenizer.hpp"
 
 #include <sentencepiece_processor.h>

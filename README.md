@@ -23,3 +23,10 @@ Backends are opt-in CMake toggles (`-DORAMA_BACKEND_MLX=ON`, `…_LIBTORCH`, `�
 
 C++23 (→ C++26 per [D7](docs/design.md)), CMake ≥ 3.28 + Ninja, FetchContent, Catch2. Library-first
 ([D16](docs/design.md)); links as `orama::model-runtime`.
+C++23 (→ C++26 per D7), CMake ≥ 3.28 + Ninja, FetchContent, Catch2. Library-first (D16); links as `orama::model-runtime`.
+
+## License
+
+MIT, see [LICENSE](LICENSE). Third-party components and their licenses are in
+[THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES). Contributions are welcome under the Developer
+Certificate of Origin; see [CONTRIBUTING.md](CONTRIBUTING.md).

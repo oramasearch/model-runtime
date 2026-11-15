@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // gemma-cli — load a real mlx-community Gemma-2 4-bit model (pure C++/MLX, no
 // Python) and greedily generate. Built with ORAMA_BACKEND_MLX. Validation tool.
 //   ./gemma-cli <model-dir> ["prompt"]

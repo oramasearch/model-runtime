@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #pragma once
 // model::Tokenizer — a thin C++ wrapper over SentencePiece (Gemma's tokenizer).
 // Pure C++, no Python (D26). pimpl so this header carries no SentencePiece
