@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.28)
-project(orama-model-runtime VERSION 0.1.0 LANGUAGES CXX)
+project(orama-model-runtime VERSION 0.1.1 LANGUAGES CXX)
 
 # Orama Platform — model-runtime: backend-agnostic model train + infer behind
 # ONE interface (architecture D19). Backends are selected per platform:
