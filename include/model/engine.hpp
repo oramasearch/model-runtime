@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #pragma once
 // model::Engine — backend-agnostic train + infer behind ONE interface (D19).
 //

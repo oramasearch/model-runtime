@@ -56,6 +56,11 @@ for f in config.json tokenizer.model model.safetensors; do curl -L "$B/$f" -o "$
 (`config.json` is informational — the architecture is baked into `GemmaConfig`
 for this exact model). Other Gemma‑2 sizes need their constants filled in.
 
+**License.** The weights are not part of this repository and are not distributed with it. Gemma is
+provided under and subject to the Gemma Terms of Use (https://ai.google.dev/gemma/terms), including
+its Prohibited Use Policy; by downloading the weights you accept those terms. This repository's own
+code, an independent implementation of the Gemma 2 architecture, is MIT (see `LICENSE`).
+
 ---
 
 ## 3. Validate generation
