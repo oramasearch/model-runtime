@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // gemma-bench — run with sudo. Spawns macOS `powermetrics` (GPU sampler, needs
 // root) and a real Gemma-2 generation workload concurrently, then prints one
 // combined report: prefill/decode tokens-per-second, peak GPU memory, and the

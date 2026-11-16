@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include <catch2/catch_test_macros.hpp>
 
 #include "model/backend.hpp"
@@ -6,6 +8,10 @@
 TEST_CASE("version is set", "[scaffold]") {
     REQUIRE(model::kName == "orama-model-runtime");
     REQUIRE_FALSE(model::kVersion.empty());
+}
+
+TEST_CASE("the header's version is the project's version", "[scaffold]") {
+    REQUIRE(model::kVersion == ORAMA_MODEL_RUNTIME_PROJECT_VERSION);
 }
 
 TEST_CASE("backends are labeled", "[scaffold]") {

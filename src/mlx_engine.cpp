@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // Real MLX backend (Apple Silicon / Metal). Compiled only when
 // ORAMA_BACKEND_MLX=ON (needs `brew install mlx`). Implements model::Engine on
 // real mlx::core arrays:

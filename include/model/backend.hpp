@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #pragma once
 // model-runtime — backend-agnostic train + infer behind ONE interface
 // (Orama Platform D19). The same training/inference contract runs on a native
@@ -5,7 +7,7 @@
 //
 // Scaffold: the backend taxonomy + a default-pick helper. The Backend
 // interface (train(), infer()) and the concrete backends land behind the
-// CMake toggles with orama-platform#33/#34/#35/#36.
+// CMake toggles.
 #include <string_view>
 
 namespace model {

@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 // Built only with ORAMA_BACKEND_MLX. Round-trips a safetensors file with no
 // Gemma weights needed — proves the pure-C++ weight loader (#102, D26).
 #include <catch2/catch_test_macros.hpp>

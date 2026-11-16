@@ -1,0 +1,103 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.7.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:24515385-7074-5523-8c04-535c2c00e2d0",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-16T07:28:18Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "tools/sbom.py"
+        },
+        {
+          "type": "application",
+          "name": "syft"
+        }
+      ]
+    },
+    "supplier": {
+      "name": "OramaSearch, Inc."
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:github/catchorg/catch2@v3.7.1?package-id=Component-Catch2-9a6c6caa4bf3b025",
+      "type": "library",
+      "name": "Catch2",
+      "version": "v3.7.1",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSL-1.0"
+          }
+        }
+      ],
+      "purl": "pkg:github/catchorg/catch2@v3.7.1",
+      "properties": [
+        {
+          "name": "syft:package:type",
+          "value": "UnknownPackage"
+        }
+      ]
+    },
+    {
+      "bom-ref": "Component-Gemma-2-weights-7176bb99b30cea2a",
+      "type": "library",
+      "name": "Gemma 2 weights",
+      "version": "NOASSERTION",
+      "licenses": [
+        {
+          "license": {
+            "name": "Gemma-Terms-of-Use"
+          }
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:github/ml-explore/mlx@not%20pinned%20%28installed%20on%20the%20system%29?package-id=Component-MLX-c5177524172ac856",
+      "type": "library",
+      "name": "MLX",
+      "version": "not pinned (installed on the system)",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "purl": "pkg:github/ml-explore/mlx@not%20pinned%20%28installed%20on%20the%20system%29",
+      "properties": [
+        {
+          "name": "syft:package:type",
+          "value": "UnknownPackage"
+        }
+      ]
+    },
+    {
+      "bom-ref": "DocumentRoot",
+      "type": "library",
+      "name": "model-runtime",
+      "version": "v0.1.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "DocumentRoot",
+      "dependsOn": [
+        "Component-Gemma-2-weights-7176bb99b30cea2a",
+        "pkg:github/catchorg/catch2@v3.7.1?package-id=Component-Catch2-9a6c6caa4bf3b025",
+        "pkg:github/ml-explore/mlx@not%20pinned%20%28installed%20on%20the%20system%29?package-id=Component-MLX-c5177524172ac856"
+      ]
+    }
+  ]
+}

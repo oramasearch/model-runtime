@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #include "model/weights.hpp"
 
 #include <exception>

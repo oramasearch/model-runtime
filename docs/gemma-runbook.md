@@ -2,7 +2,7 @@
 
 Operational guide to build, run, validate, and benchmark the **real Gemma‑2
 language model** in this repo. Everything is **pure C++ on `mlx::core`** — no
-Python, no `mlx_lm` ([D26](https://github.com/oramasearch/orama-platform/blob/main/docs/projects/orama-platform/architecture.md#d26)).
+Python, no `mlx_lm` ([D26](design.md)).
 Implementation: [`src/gemma.cpp`](../src/gemma.cpp) + [`include/model/gemma.hpp`](../include/model/gemma.hpp);
 tokenizer [`src/tokenizer.cpp`](../src/tokenizer.cpp); weights [`src/weights.cpp`](../src/weights.cpp).
 
@@ -43,8 +43,9 @@ no-Gemma desktop build.
 
 ## 2. Get the weights (data download — no Python)
 
-`mlx-community/gemma-2-2b-it-4bit` is **public** (not gated). Fetch the files
-straight over HTTPS:
+`mlx-community/gemma-2-2b-it-4bit` is **public** (not gated). The weights are not part of this
+repository: you download them yourself, and their use is under Google's
+[Gemma Terms of Use](https://ai.google.dev/gemma/terms). Fetch the files straight over HTTPS:
 
 ```sh
 mkdir -p ~/models/gemma-2-2b-it-4bit && cd ~/models/gemma-2-2b-it-4bit
@@ -54,6 +55,11 @@ for f in config.json tokenizer.model model.safetensors; do curl -L "$B/$f" -o "$
 ~1.5 GB. Only `model.safetensors` + `tokenizer.model` are read at runtime
 (`config.json` is informational — the architecture is baked into `GemmaConfig`
 for this exact model). Other Gemma‑2 sizes need their constants filled in.
+
+**License.** The weights are not part of this repository and are not distributed with it. Gemma is
+provided under and subject to the Gemma Terms of Use (https://ai.google.dev/gemma/terms), including
+its Prohibited Use Policy; by downloading the weights you accept those terms. This repository's own
+code, an independent implementation of the Gemma 2 architecture, is MIT (see `LICENSE`).
 
 ---
 
@@ -136,7 +142,8 @@ broken output if dropped:
 - **`gelu_pytorch_tanh`** activation in the SwiGLU MLP.
 - **RoPE** `mx::fast::rope(dims=256, traditional=false, base=10000, offset=pos)`.
 
-Full rationale: [D26](https://github.com/oramasearch/orama-platform/blob/main/docs/projects/orama-platform/architecture.md#d26) / [D19](https://github.com/oramasearch/orama-platform/blob/main/docs/projects/orama-platform/architecture.md#d19); reference: [`research/mlx-finetuning-gemma4-lora.md`](https://github.com/oramasearch/orama-platform/blob/main/docs/projects/orama-platform/research/mlx-finetuning-gemma4-lora.md) (port the *architecture*; its `nn::Module`/`AdamW` are Python).
+Full rationale: [D26 and D19](design.md). Reference implementations in Python (MLX-LM) are read
+only to port the *architecture*; their `nn::Module`/`AdamW` are Python and are not used.
 
 ---
 
@@ -155,8 +162,6 @@ Full rationale: [D26](https://github.com/oramasearch/orama-platform/blob/main/do
 ## 8. Known limitations / next
 
 - **Greedy only** — repeats after the opening; a sampler (temperature / top‑p / repetition penalty) is the next add (kills repetition).
-- **LoRA is the toy net** in `MlxEngine::train_step`; LoRA over the *real* Gemma projections is the remaining `#102` task.
+- **LoRA is the toy net** in `MlxEngine::train_step`; LoRA over the *real* Gemma projections is the remaining work.
 - **Sliding-window attention** is approximated as full causal (exact for context < 4096; Gemma‑2's per-layer sliding window only matters beyond that).
 - **Single baked config** (gemma‑2‑2b‑it); other sizes/families need their `GemmaConfig` constants.
-
-Tracking: [orama-platform#102](https://github.com/oramasearch/orama-platform/issues/102).

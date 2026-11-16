@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #pragma once
 // model::Gemma — a real Gemma-2 language model in pure C++ on mlx::core (D26,
 // no Python). Loads mlx-community 4-bit safetensors + the SentencePiece

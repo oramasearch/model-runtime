@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: MIT
+
 #pragma once
 // model::Weights — named tensors loaded from a .safetensors file into mlx
 // arrays, in pure C++ (no Python, D26). The model forward reads its weights

@@ -1,0 +1,119 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "model-runtime-v0.1.0",
+  "documentNamespace": "https://github.com/oramasearch/model-runtime/sbom/797ba987bf78c186948a2e4f89a365dfb7ad7253",
+  "creationInfo": {
+    "created": "2026-11-16T07:28:18Z",
+    "creators": [
+      "Organization: OramaSearch, Inc.",
+      "Tool: tools/sbom.py",
+      "Tool: syft"
+    ],
+    "licenseListVersion": "3.29",
+    "comment": "Made from source commit 797ba987bf78c186948a2e4f89a365dfb7ad7253 by tools/sbom.py."
+  },
+  "documentDescribes": [
+    "SPDXRef-DocumentRoot"
+  ],
+  "packages": [
+    {
+      "name": "Catch2",
+      "SPDXID": "SPDXRef-Component-Catch2-9a6c6caa4bf3b025",
+      "versionInfo": "v3.7.1",
+      "downloadLocation": "https://github.com/catchorg/Catch2",
+      "filesAnalyzed": false,
+      "supplier": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "BSL-1.0",
+      "comment": "How it is used: fetched at build, tests only. Listed in THIRD_PARTY_LICENSES.",
+      "homepage": "https://github.com/catchorg/Catch2",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:github/catchorg/Catch2@v3.7.1"
+        }
+      ]
+    },
+    {
+      "name": "Gemma 2 weights",
+      "SPDXID": "SPDXRef-Component-Gemma-2-weights-7176bb99b30cea2a",
+      "versionInfo": "NOASSERTION",
+      "downloadLocation": "https://huggingface.co/mlx-community/gemma-2-2b-it-4bit",
+      "filesAnalyzed": false,
+      "supplier": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "LicenseRef-Gemma-Terms-of-Use",
+      "comment": "mlx-community/gemma-2-2b-it-4bit. How it is used: not distributed; downloaded by the user. Listed in THIRD_PARTY_LICENSES.",
+      "homepage": "https://huggingface.co/mlx-community/gemma-2-2b-it-4bit"
+    },
+    {
+      "name": "MLX",
+      "SPDXID": "SPDXRef-Component-MLX-c5177524172ac856",
+      "versionInfo": "not pinned (installed on the system)",
+      "downloadLocation": "https://github.com/ml-explore/mlx",
+      "filesAnalyzed": false,
+      "supplier": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "MIT",
+      "comment": "How it is used: optional backend (-DORAMA_BACKEND_MLX=ON), linked from a system install, not distributed. Listed in THIRD_PARTY_LICENSES.",
+      "homepage": "https://github.com/ml-explore/mlx",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:github/ml-explore/mlx@not pinned (installed on the system)"
+        }
+      ]
+    },
+    {
+      "name": "model-runtime",
+      "SPDXID": "SPDXRef-DocumentRoot",
+      "versionInfo": "v0.1.0",
+      "downloadLocation": "git+https://github.com/oramasearch/model-runtime.git",
+      "homepage": "https://github.com/oramasearch/model-runtime",
+      "filesAnalyzed": false,
+      "supplier": "Organization: OramaSearch, Inc.",
+      "originator": "Organization: OramaSearch, Inc.",
+      "licenseConcluded": "MIT",
+      "licenseDeclared": "MIT",
+      "copyrightText": "Copyright (c) 2026 OramaSearch, Inc.",
+      "primaryPackagePurpose": "SOURCE",
+      "comment": "The source tree of model-runtime. Packages found by syft in the files git tracks, plus the C and C++ components of THIRD_PARTY_LICENSES and the git submodules."
+    }
+  ],
+  "hasExtractedLicensingInfos": [
+    {
+      "licenseId": "LicenseRef-Gemma-Terms-of-Use",
+      "name": "Gemma Terms of Use",
+      "extractedText": "Gemma Terms of Use: the full text is in THIRD_PARTY_LICENSES."
+    }
+  ],
+  "relationships": [
+    {
+      "relatedSpdxElement": "SPDXRef-Component-Catch2-9a6c6caa4bf3b025",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-DocumentRoot"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Component-Gemma-2-weights-7176bb99b30cea2a",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-DocumentRoot"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-Component-MLX-c5177524172ac856",
+      "relationshipType": "DEPENDS_ON",
+      "spdxElementId": "SPDXRef-DocumentRoot"
+    },
+    {
+      "relatedSpdxElement": "SPDXRef-DocumentRoot",
+      "relationshipType": "DESCRIBES",
+      "spdxElementId": "SPDXRef-DOCUMENT"
+    }
+  ]
+}
