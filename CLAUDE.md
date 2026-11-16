@@ -34,4 +34,4 @@ Real Gemma‑2 (pure C++/MLX, no Python): **[`docs/gemma-runbook.md`](docs/gemma
 - **Conventional Commits**; feature branch + pull request, never a push to the default branch.
 - **No AI attribution anywhere**: never an AI `Co-Authored-By` trailer, "Generated with", or a mention of an AI in commits, pull requests, tags or release notes.
 - No time or size estimates.
-- Never write the word "seam": name the mechanism (interface, extension point, boundary, injected dependency).
+- Name the mechanism exactly (interface, extension point, boundary, injected dependency), never a vague catch-all word for it.
