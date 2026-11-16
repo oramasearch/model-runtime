@@ -2,10 +2,10 @@
   "$schema": "http://cyclonedx.org/schema/bom-1.7.schema.json",
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
-  "serialNumber": "urn:uuid:24515385-7074-5523-8c04-535c2c00e2d0",
+  "serialNumber": "urn:uuid:fdf74992-3998-5912-baa2-c2a9bc12a8d8",
   "version": 1,
   "metadata": {
-    "timestamp": "2026-11-16T07:28:18Z",
+    "timestamp": "2026-11-16T08:23:50Z",
     "tools": {
       "components": [
         {
@@ -80,7 +80,7 @@
       "bom-ref": "DocumentRoot",
       "type": "library",
       "name": "model-runtime",
-      "version": "v0.1.0",
+      "version": "v0.1.1",
       "licenses": [
         {
           "license": {

@@ -25,8 +25,9 @@
 namespace model {
 
 // Per-token hook. Receives the token just produced; may RETURN text to inject
-// into the context before the next token (empty = inject nothing). This is the
-// D25 seam: the agent runs a data-node search here and feeds results back in.
+// into the context before the next token (empty = inject nothing). The callback
+// is an injected dependency: the agent runs a data-node search here and feeds
+// the results back in.
 using OnToken = std::function<std::string(std::string_view token)>;
 
 struct InferResult {
