@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: MIT
 
 cmake_minimum_required(VERSION 3.28)
-project(orama-model-runtime LANGUAGES CXX)
+project(orama-model-runtime VERSION 0.1.0 LANGUAGES CXX)
 
 # Orama Platform — model-runtime: backend-agnostic model train + infer behind
 # ONE interface (architecture D19). Backends are selected per platform:
@@ -71,7 +71,17 @@ if(BUILD_TESTING)
   endif()
   add_executable(model-runtime-tests ${MR_TESTS})
   target_link_libraries(model-runtime-tests PRIVATE model-runtime Catch2::Catch2WithMain)
+  # The release version lives in project(VERSION); the test checks the header says the same.
+  target_compile_definitions(model-runtime-tests PRIVATE
+    ORAMA_MODEL_RUNTIME_PROJECT_VERSION="${PROJECT_VERSION}")
   list(APPEND CMAKE_MODULE_PATH ${catch2_SOURCE_DIR}/extras)
   include(Catch)
   catch_discover_tests(model-runtime-tests)
+
+  # Every version has its release notes, indexed in docs/releases/README.md.
+  add_test(NAME release_notes_exist
+    COMMAND ${CMAKE_COMMAND} -E cat ${CMAKE_CURRENT_SOURCE_DIR}/docs/releases/v${PROJECT_VERSION}.md)
+  add_test(NAME release_notes_indexed
+    COMMAND ${CMAKE_COMMAND} -DFILE=${CMAKE_CURRENT_SOURCE_DIR}/docs/releases/README.md
+            -DNEEDLE=v${PROJECT_VERSION}.md -P ${CMAKE_CURRENT_SOURCE_DIR}/tests/contains.cmake)
 endif()

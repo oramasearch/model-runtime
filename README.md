@@ -8,6 +8,8 @@ The same training/inference contract runs on a **native backend per platform** â
 Small, single-responsibility module ([D21](docs/design.md)). The decisions it is built on (D7, D16,
 D19, D21, D26) are in [`docs/design.md`](docs/design.md).
 
+Released: [v0.1.0](docs/releases/v0.1.0.md) ([all releases](docs/releases/README.md)).
+
 ## Build
 
 ```sh
