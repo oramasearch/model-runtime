@@ -21,11 +21,11 @@ option(ORAMA_BACKEND_LIBTORCH "Build the libtorch backend (Linux/Windows)" OFF)
 option(ORAMA_BACKEND_LLAMACPP "Build the llama.cpp backend"                OFF)
 option(ORAMA_BACKEND_CUDA     "Build the CUDA backend (cloud)"             OFF)
 
-# Library first (D16). The interface is backend-free; backends are added behind
-# the toggles with their impl issues (orama-platform#33/#34/#35/#36).
-# Library first (D16). The interface + a deterministic stub engine (so the
+# Library first (D16, docs/design.md). The interface is backend-free; backends are added behind
+# the toggles.
+# Library first (D16, docs/design.md). The interface + a deterministic stub engine (so the
 # chain + UI build/run with no ML toolchain). Real backends compile in behind
-# the toggles above with their impl issues (orama-platform#33/#34/#35/#36).
+# the toggles above.
 add_library(model-runtime STATIC src/engine.cpp)
 add_library(orama::model-runtime ALIAS model-runtime)
 target_include_directories(model-runtime PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
