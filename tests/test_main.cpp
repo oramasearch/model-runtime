@@ -10,6 +10,10 @@ TEST_CASE("version is set", "[scaffold]") {
     REQUIRE_FALSE(model::kVersion.empty());
 }
 
+TEST_CASE("the header's version is the project's version", "[scaffold]") {
+    REQUIRE(model::kVersion == ORAMA_MODEL_RUNTIME_PROJECT_VERSION);
+}
+
 TEST_CASE("backends are labeled", "[scaffold]") {
     REQUIRE(model::label(model::Backend::MLX) == "mlx");
     REQUIRE(model::label(model::Backend::LibTorch) == "libtorch");

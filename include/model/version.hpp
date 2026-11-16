@@ -5,5 +5,5 @@
 
 namespace model {
 inline constexpr std::string_view kName = "orama-model-runtime";
-inline constexpr std::string_view kVersion = "0.0.1";
+inline constexpr std::string_view kVersion = "0.1.0";
 }  // namespace model
