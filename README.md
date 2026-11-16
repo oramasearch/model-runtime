@@ -28,5 +28,5 @@ C++23 (→ C++26 per D7), CMake ≥ 3.28 + Ninja, FetchContent, Catch2. Library-
 ## License
 
 MIT, see [LICENSE](LICENSE). Third-party components and their licenses are in
-[THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES). Contributions are welcome under the Developer
-Certificate of Origin; see [CONTRIBUTING.md](CONTRIBUTING.md).
+[THIRD_PARTY_LICENSES](THIRD_PARTY_LICENSES). Contributions are welcome under the
+[Contributor License Agreement](CLA.md); see [CONTRIBUTING.md](CONTRIBUTING.md).
